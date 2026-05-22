@@ -4,8 +4,9 @@ type Lang = 'en' | 'uk';
 
 const translations: Record<Lang, Record<string, string>> = {
   en: {
-    title: 'Elementary Learning Hub',
+    title: 'MiniAcademy',
     subtitle: 'Choose your subject to start learning!',
+    homeFooter: 'MiniAcademy — interactive learning for elementary students',
     math: 'Math',
     english: 'English',
     ukrainian: 'Ukrainian',
@@ -122,8 +123,9 @@ const translations: Record<Lang, Record<string, string>> = {
     noTopicsYet: 'No topics yet — create one above',
   },
   uk: {
-    title: 'Початковий Навчальний Центр',
+    title: 'MiniAcademy',
     subtitle: 'Оберіть предмет, щоб почати навчання!',
+    homeFooter: 'MiniAcademy — інтерактивне навчання для початкової школи',
     math: 'Математика',
     english: 'Англійська',
     ukrainian: 'Українська',

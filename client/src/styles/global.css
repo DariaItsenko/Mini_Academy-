@@ -459,19 +459,25 @@ button {
 }
 
 .app-logo-sm {
-  max-height: 48px;
+  max-height: 56px;
+  width: 56px;
 }
 
 .app-logo-md {
-  max-height: 80px;
+  max-height: 100px;
 }
 
 .app-logo-lg {
-  max-height: 140px;
+  max-height: 160px;
+}
+
+.app-logo-xl {
+  max-height: 200px;
 }
 
 .home-logo {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  max-height: 200px;
 }
 
 .auth-logo {

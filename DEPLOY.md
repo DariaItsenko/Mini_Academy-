@@ -1,4 +1,4 @@
-# Deploy Elementary Learning Hub (real website)
+# Deploy MiniAcademy (real website)
 
 The app is one Node server that serves the React build + API + uploaded videos.
 

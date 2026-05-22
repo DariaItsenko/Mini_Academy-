@@ -7,7 +7,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png', 'favicon.png', 'favicon-16.png', 'favicon-32.png', 'icons/*.png'],
+      includeAssets: [
+        'logo.png',
+        'logo-square.png',
+        'favicon.png',
+        'favicon-16.png',
+        'favicon-32.png',
+        'icons/*.png',
+      ],
       manifest: {
         name: 'MiniAcademy',
         short_name: 'MiniAcademy',
@@ -21,8 +28,7 @@ export default defineConfig({
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-          { src: '/logo.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: '/logo-square.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppLogo } from '../components/AppLogo';
 import { Header } from '../components/Header';
 import { WelcomeModal } from '../components/WelcomeModal';
 import { useLanguage } from '../context/LanguageContext';
@@ -40,7 +39,6 @@ export default function HomePage() {
       {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
 
       <main className="home-main">
-        <AppLogo size="lg" className="home-logo" />
         <h1 className="home-title">
           <span className="title-text">{t('title')}</span>
         </h1>
@@ -72,9 +70,7 @@ export default function HomePage() {
             {t('welcomeTitle')} — {t('login')} / {t('signUp')}
           </button>
         )}
-        <p className="home-footer">
-          Perfect for elementary grades • Interactive learning • Expert instructors
-        </p>
+        <p className="home-footer">{t('homeFooter')}</p>
       </main>
     </div>
   );

@@ -1,4 +1,4 @@
-# Elementary Learning Hub
+# MiniAcademy
 
 A playful learning app for elementary students with Math, English, and Ukrainian subjects.
 
