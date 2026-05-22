@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppLogo } from '../components/AppLogo';
 import { Header } from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -30,9 +29,8 @@ export default function LoginPage() {
 
   return (
     <div className="page auth-page">
-      <Header showNav={false} />
+      <Header variant="minimal" />
       <div className="auth-card">
-        <AppLogo size="md" className="auth-logo" />
         <h1>{t('login')}</h1>
         <form onSubmit={handleSubmit} className="auth-form">
           <label>

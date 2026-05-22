@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppLogo } from '../components/AppLogo';
 import { Header } from '../components/Header';
 import { AvatarCharacter } from '../components/AvatarCharacter';
 import { useAuth } from '../context/AuthContext';
@@ -63,10 +62,9 @@ export default function RegisterPage() {
 
   return (
     <div className="page auth-page">
-      <Header showNav={false} />
+      <Header variant="minimal" />
       <div className="auth-card">
-        <AppLogo size="md" className="auth-logo" />
-        <h1>{t('welcome')}</h1>
+        <h1>{t('signUp')}</h1>
         <p className="auth-sub">{t('createAccount')}</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
