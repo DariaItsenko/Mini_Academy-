@@ -85,11 +85,13 @@ export default function AdminSubtopicEditorPage() {
   };
 
   return (
-    <div className="page admin-page admin-wireframe admin-subtopic-editor">
-      <Link to={`/admin/subject/${subject}/${topicId}`} className="back-btn">
+    <div className="page admin-page admin-page-color admin-subtopic-editor">
+      <Link to={`/admin/subject/${subject}/${topicId}`} className="back-btn admin-back">
         ← {found.topic.title}
       </Link>
-      <h1 className="admin-wireframe-title">{subtopic.name}</h1>
+      <header className="admin-page-hero compact">
+        <h1>{subtopic.icon} {subtopic.name}</h1>
+      </header>
       {message && <p className="admin-msg">{message}</p>}
 
       <label className="admin-inline-label">

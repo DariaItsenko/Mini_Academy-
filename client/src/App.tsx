@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 
 import { AccountSidebar } from './components/AccountSidebar';
+import { AdminDock } from './components/AdminDock';
 import { InstallPWA } from './components/InstallPWA';
 
 import HomePage from './pages/HomePage';
@@ -77,6 +78,22 @@ function AdminRoute({ children }: { children: ReactNode }) {
 
 
 
+function StatisticsRoute({ children }: { children: ReactNode }) {
+
+  const { user, loading } = useAuth();
+
+  if (loading) return <div className="loading-screen">Loading...</div>;
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (user.isAdmin) return <Navigate to="/profile" replace />;
+
+  return <>{children}</>;
+
+}
+
+
+
 export default function App() {
 
   return (
@@ -86,6 +103,8 @@ export default function App() {
       <InstallPWA />
 
       <AccountSidebar />
+
+      <AdminDock />
 
       <Routes>
 
@@ -113,21 +132,7 @@ export default function App() {
 
         />
 
-        <Route
-
-          path="/statistics"
-
-          element={
-
-            <ProtectedRoute>
-
-              <StatisticsPage />
-
-            </ProtectedRoute>
-
-          }
-
-        />
+        <Route path="/statistics" element={<StatisticsRoute><StatisticsPage /></StatisticsRoute>} />
 
         <Route
 

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { AppLogo } from './AppLogo';
 import { useLanguage } from '../context/LanguageContext';
 import { useAccountSidebar } from '../context/AccountSidebarContext';
 
@@ -17,7 +18,7 @@ export function WelcomeModal({ onClose }: Props) {
         <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
           ×
         </button>
-        <div className="welcome-modal-icon">🎓</div>
+        <AppLogo size="lg" className="welcome-modal-logo" />
         <h2 id="welcome-title">{t('welcomeTitle')}</h2>
         <p className="welcome-modal-sub">{t('welcomeSub')}</p>
 

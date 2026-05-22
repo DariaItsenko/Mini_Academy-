@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AppLogo } from '../components/AppLogo';
 import { Header } from '../components/Header';
 import { AvatarCharacter } from '../components/AvatarCharacter';
 import { useAuth } from '../context/AuthContext';
@@ -34,12 +35,27 @@ export default function RegisterPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const trimmedParent = parentEmail.trim();
+    if (trimmedParent && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedParent)) {
+      setError(t('invalidParentEmail'));
+      return;
+    }
+
     setLoading(true);
     try {
-      await register({ username, password, email, parentEmail, age, grade, characterGender });
+      await register({
+        username: username.trim(),
+        password,
+        email: email.trim().toLowerCase(),
+        parentEmail: trimmedParent || undefined,
+        age,
+        grade,
+        characterGender,
+      });
       navigate('/profile');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      setError(err instanceof Error ? err.message : t('registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -49,7 +65,7 @@ export default function RegisterPage() {
     <div className="page auth-page">
       <Header showNav={false} />
       <div className="auth-card">
-        <div className="auth-icon">👤</div>
+        <AppLogo size="md" className="auth-logo" />
         <h1>{t('welcome')}</h1>
         <p className="auth-sub">{t('createAccount')}</p>
 
@@ -78,8 +94,16 @@ export default function RegisterPage() {
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Enter email" />
           </label>
           <label>
-            Parent Email
-            <input type="email" value={parentEmail} onChange={(e) => setParentEmail(e.target.value)} placeholder="Enter parent email" />
+            {t('parentEmail')}
+            <input
+              type="text"
+              inputMode="email"
+              autoComplete="email"
+              value={parentEmail}
+              onChange={(e) => setParentEmail(e.target.value)}
+              placeholder={t('parentEmailPlaceholder')}
+            />
+            <span className="field-hint">{t('parentEmailOptional')}</span>
           </label>
 
           <div className="picker-group">

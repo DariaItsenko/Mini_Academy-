@@ -151,43 +151,58 @@ function resolveSubtopicParams(curriculum, subjectId, topicId, subtopicId) {
 
 // ——— Auth ———
 app.post('/api/auth/register', async (req, res) => {
-  const { username, email, password, parentEmail, age, grade, characterGender } = req.body;
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: 'Username, email, and password are required' });
+  try {
+    const { username, email, password, parentEmail, age, grade, characterGender } = req.body;
+    const cleanUsername = String(username || '').trim();
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const cleanParent = String(parentEmail || '').trim();
+
+    if (!cleanUsername || !cleanEmail || !password) {
+      return res.status(400).json({ error: 'Username, email, and password are required' });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    if (cleanParent && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanParent)) {
+      return res.status(400).json({ error: 'Parent email is not valid' });
+    }
+    if (db.getUserByEmail(cleanEmail) || db.getUserByUsername(cleanUsername)) {
+      return res.status(409).json({ error: 'Email or username already exists' });
+    }
+    const id = uuid();
+    const hash = await bcrypt.hash(password, 10);
+    const owned = ['skin-light', 'skin-medium', 'top-default', 'bottom-default', 'shoes-default', 'hair-brown'];
+    db.insertUser({
+      id,
+      username: cleanUsername,
+      email: cleanEmail,
+      password_hash: hash,
+      parent_email: cleanParent || null,
+      age: age || 7,
+      grade: grade || 1,
+      character_gender: characterGender || 'girl',
+      avatar_json: JSON.stringify({ ...defaultAvatar }),
+      owned_items_json: JSON.stringify(owned),
+      points: 0,
+      stars: 0,
+      streak: 1,
+      is_admin: 0,
+      created_at: new Date().toISOString(),
+    });
+    updateStreak(id);
+    const token = jwt.sign({ userId: id }, JWT_SECRET, { expiresIn: '30d' });
+    setAuthCookie(res, token);
+    const user = rowToUser(db.getUserById(id));
+    res.json({ user, token });
+  } catch (err) {
+    console.error('Register error:', err);
+    res.status(500).json({ error: 'Registration failed. Please try again.' });
   }
-  if (db.getUserByEmail(email) || db.getUserByUsername(username)) {
-    return res.status(409).json({ error: 'Email or username already exists' });
-  }
-  const id = uuid();
-  const hash = await bcrypt.hash(password, 10);
-  const owned = ['skin-light', 'skin-medium', 'top-default', 'bottom-default', 'shoes-default', 'hair-brown'];
-  db.insertUser({
-    id,
-    username,
-    email,
-    password_hash: hash,
-    parent_email: parentEmail || null,
-    age: age || 7,
-    grade: grade || 1,
-    character_gender: characterGender || 'girl',
-    avatar_json: JSON.stringify({ ...defaultAvatar }),
-    owned_items_json: JSON.stringify(owned),
-    points: 0,
-    stars: 0,
-    streak: 1,
-    is_admin: 0,
-    created_at: new Date().toISOString(),
-  });
-  updateStreak(id);
-  const token = jwt.sign({ userId: id }, JWT_SECRET, { expiresIn: '30d' });
-  setAuthCookie(res, token);
-  const user = rowToUser(db.getUserById(id));
-  res.json({ user, token });
 });
 
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-  const row = db.getUserByEmail(email);
+  const row = db.getUserByEmail(String(email || '').trim().toLowerCase());
   if (!row || !(await bcrypt.compare(password, row.password_hash))) {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
@@ -319,10 +334,95 @@ app.delete('/api/admin/exercises/:id', adminMiddleware, (req, res) => {
 });
 
 // ——— Admin: curriculum ———
+const SUBJECT_THEMES = {
+  blue: { gradientClass: 'math-bg', cardClass: 'math-card' },
+  green: { gradientClass: 'english-bg', cardClass: 'english-card' },
+  orange: { gradientClass: 'ukrainian-bg', cardClass: 'ukrainian-card' },
+  purple: { gradientClass: 'purple-bg', cardClass: 'purple-card' },
+  pink: { gradientClass: 'pink-bg', cardClass: 'pink-card' },
+  teal: { gradientClass: 'teal-bg', cardClass: 'teal-card' },
+};
+
+function slugifySubjectId(name) {
+  return String(name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 40);
+}
+
 app.put('/api/admin/curriculum', adminMiddleware, (req, res) => {
   if (!req.body.curriculum) return res.status(400).json({ error: 'curriculum required' });
   db.saveCurriculum(req.body.curriculum);
   res.json({ curriculum: db.getCurriculum() });
+});
+
+app.post('/api/admin/curriculum/subjects', adminMiddleware, (req, res) => {
+  try {
+    const { id, label, icon, theme } = req.body;
+    const displayLabel = String(label || '').trim();
+    if (!displayLabel) return res.status(400).json({ error: 'Subject name is required' });
+
+    const subjectId = slugifySubjectId(id || displayLabel);
+    if (!subjectId) return res.status(400).json({ error: 'Invalid subject id' });
+
+    const curriculum = db.getCurriculum();
+    if (curriculum[subjectId]) {
+      return res.status(409).json({ error: 'A subject with this id already exists' });
+    }
+
+    const themeConfig = SUBJECT_THEMES[theme] || SUBJECT_THEMES.purple;
+    curriculum[subjectId] = {
+      id: subjectId,
+      titleKey: subjectId,
+      label: displayLabel,
+      icon: String(icon || '📚').trim() || '📚',
+      gradientClass: themeConfig.gradientClass,
+      cardClass: themeConfig.cardClass,
+      topics: [],
+    };
+
+    db.saveCurriculum(curriculum);
+    res.status(201).json({ curriculum, subject: curriculum[subjectId] });
+  } catch (err) {
+    console.error('Create subject error:', err);
+    res.status(500).json({ error: 'Failed to create subject' });
+  }
+});
+
+app.post('/api/admin/curriculum/:subject/topics', adminMiddleware, (req, res) => {
+  try {
+    const { subject } = req.params;
+    const { title, description, icon } = req.body;
+    const topicTitle = String(title || '').trim();
+    if (!topicTitle) return res.status(400).json({ error: 'Topic title is required' });
+
+    const curriculum = db.getCurriculum();
+    const subj = curriculum[subject];
+    if (!subj) return res.status(404).json({ error: 'Subject not found' });
+
+    const topicId = slugifySubjectId(title);
+    if (subj.topics?.some((t) => t.id === topicId)) {
+      return res.status(409).json({ error: 'Topic already exists in this subject' });
+    }
+
+    const topic = {
+      id: topicId,
+      title: topicTitle,
+      description: String(description || '').trim() || '',
+      icon: String(icon || '📁').trim() || '📁',
+      subtopics: [],
+    };
+
+    if (!subj.topics) subj.topics = [];
+    subj.topics.push(topic);
+    db.saveCurriculum(curriculum);
+    res.status(201).json({ curriculum, topic });
+  } catch (err) {
+    console.error('Create topic error:', err);
+    res.status(500).json({ error: 'Failed to create topic' });
+  }
 });
 
 app.put('/api/admin/curriculum/:subject/:topicId/:subtopicId', adminMiddleware, (req, res) => {

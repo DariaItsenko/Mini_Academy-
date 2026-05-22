@@ -1,12 +1,17 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useCurriculum } from '../../context/CurriculumContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { AdminColorCard } from '../../components/AdminColorCard';
+import { CreateSubjectForm } from '../../components/CreateSubjectForm';
+import { getSubjectAdminClass, getSubjectTitle } from '../../lib/subjectDisplay';
+import { Link } from 'react-router-dom';
 
 export default function AdminPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { curriculum, loading } = useCurriculum();
   const { t } = useLanguage();
+  const [showCreate, setShowCreate] = useState(false);
 
   if (!user?.isAdmin) {
     return (
@@ -20,35 +25,42 @@ export default function AdminPage() {
   if (loading) return <div className="page loading-screen">Loading...</div>;
 
   return (
-    <div className="page admin-page admin-wireframe">
-      <div className="admin-nav">
-        <Link to="/" className="back-btn">
-          ← {t('backHome')}
-        </Link>
-        <button type="button" className="nav-btn logout-btn" onClick={() => logout()}>
-          {t('logout')}
+    <div className="page admin-page admin-page-color">
+      <header className="admin-page-hero">
+        <h1>🛡️ {t('adminPanel')}</h1>
+        <p>{t('adminPreviewHint')}</p>
+      </header>
+
+      {!showCreate ? (
+        <button
+          type="button"
+          className="btn btn-gradient admin-add-subject-btn"
+          onClick={() => setShowCreate(true)}
+        >
+          ➕ {t('createSubject')}
         </button>
-      </div>
+      ) : (
+        <CreateSubjectForm onCreated={() => setShowCreate(false)} onCancel={() => setShowCreate(false)} />
+      )}
 
-      <h1 className="admin-wireframe-title muted-title">{t('adminPanel')}</h1>
-
-      <div className="wireframe-grid admin-subjects-grid">
+      <div className="admin-color-grid">
         {Object.values(curriculum).map((subj) => (
-          <Link key={subj.id} to={`/admin/subject/${subj.id}`} className="wireframe-card admin-wireframe-card">
-            <span className="wireframe-card-title">
-              {subj.icon} {t(subj.titleKey)}
-            </span>
-            <span className="wireframe-card-edit">{t('edit')}</span>
-          </Link>
+          <AdminColorCard
+            key={subj.id}
+            to={`/admin/subject/${subj.id}`}
+            title={getSubjectTitle(subj, t)}
+            icon={subj.icon}
+            subject={getSubjectAdminClass(subj)}
+            actionLabel={t('edit')}
+          />
         ))}
-      </div>
-
-      <p className="wireframe-add-link">+ {t('addNewItem')}</p>
-
-      <div className="admin-extra-links">
-        <Link to="/admin/assignments" className="btn btn-gradient admin-link-card">
-          📝 {t('assignmentBuilder')}
-        </Link>
+        <AdminColorCard
+          to="/admin/assignments"
+          title={t('assignmentBuilder')}
+          icon="📝"
+          subject="orange"
+          actionLabel={t('edit')}
+        />
       </div>
     </div>
   );

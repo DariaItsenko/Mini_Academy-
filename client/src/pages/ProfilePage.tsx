@@ -17,7 +17,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="page profile-page">
+    <div className={`page profile-page${user.isAdmin ? ' admin-profile-page' : ''}`}>
       <Link to="/" className="back-btn">
         <span aria-hidden>←</span> {t('backHome')}
       </Link>
@@ -41,39 +41,44 @@ export default function ProfilePage() {
           </div>
           <div className="profile-info">
             <h1>{user.username}</h1>
-            <div className="stats-badges">
-              <div className="stat-pill points">
-                <span className="pill-icon" aria-hidden>
-                  ⭐
-                </span>
-                <span className="pill-text">
-                  <span className="pill-label">{t('points')}</span>
-                  <span className="pill-value">{user.points}</span>
-                </span>
-              </div>
-              <div className="stat-pill streak">
-                <span className="pill-icon" aria-hidden>
-                  📅
-                </span>
-                <span className="pill-text">
-                  <span className="pill-label">{t('streak')}</span>
-                  <span className="pill-value">
-                    {user.streak} 🔥
+            {!user.isAdmin && (
+              <div className="stats-badges">
+                <div className="stat-pill points">
+                  <span className="pill-icon" aria-hidden>
+                    ⭐
                   </span>
-                </span>
-              </div>
-              <div className="stat-pill grade">
-                <span className="pill-icon" aria-hidden>
-                  🎀
-                </span>
-                <span className="pill-text">
-                  <span className="pill-label">{t('grade')}</span>
-                  <span className="pill-value">
-                    {user.grade}/12
+                  <span className="pill-text">
+                    <span className="pill-label">{t('points')}</span>
+                    <span className="pill-value">{user.points}</span>
                   </span>
-                </span>
+                </div>
+                <div className="stat-pill streak">
+                  <span className="pill-icon" aria-hidden>
+                    📅
+                  </span>
+                  <span className="pill-text">
+                    <span className="pill-label">{t('streak')}</span>
+                    <span className="pill-value">
+                      {user.streak} 🔥
+                    </span>
+                  </span>
+                </div>
+                <div className="stat-pill grade">
+                  <span className="pill-icon" aria-hidden>
+                    🎀
+                  </span>
+                  <span className="pill-text">
+                    <span className="pill-label">{t('grade')}</span>
+                    <span className="pill-value">
+                      {user.grade}/12
+                    </span>
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
+            {user.isAdmin && (
+              <p className="admin-account-role">🛡️ {t('adminPanel')}</p>
+            )}
             <Link to="/shop" className="btn btn-shop">
               <span aria-hidden>🛍️</span> {t('avatarShop')}
               <span className="shop-cards" aria-hidden>

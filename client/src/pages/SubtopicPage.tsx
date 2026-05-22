@@ -5,6 +5,7 @@ import { useCurriculum } from '../context/CurriculumContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { youtubeEmbedUrl } from '../lib/curriculumNormalize';
+import { getSubjectTitle } from '../lib/subjectDisplay';
 
 type Tab = 'video' | 'lecture' | 'examples' | 'assignments';
 
@@ -72,7 +73,7 @@ export default function SubtopicPage() {
   return (
     <div className={`page subject-detail-page subtopic-detail-page ${subj.gradientClass}`}>
       <Link to={backTo} className="back-btn light">
-        <span aria-hidden>←</span> {t(subj.titleKey)}
+        <span aria-hidden>←</span> {getSubjectTitle(subj, t)}
       </Link>
 
       <header className="subject-hero compact-hero">

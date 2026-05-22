@@ -7,13 +7,13 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.png', 'favicon-16.png', 'favicon-32.png', 'icons/*.png'],
+      includeAssets: ['logo.png', 'favicon.png', 'favicon-16.png', 'favicon-32.png', 'icons/*.png'],
       manifest: {
-        name: 'Elementary Learning Hub',
-        short_name: 'Learning Hub',
+        name: 'MiniAcademy',
+        short_name: 'MiniAcademy',
         description: 'Interactive learning for elementary students',
-        theme_color: '#8B5CF6',
-        background_color: '#FDF2F8',
+        theme_color: '#7C3AED',
+        background_color: '#1E1B4B',
         display: 'standalone',
         orientation: 'any',
         scope: '/',
@@ -22,6 +22,7 @@ export default defineConfig({
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/logo.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
         ],
       },
       workbox: {

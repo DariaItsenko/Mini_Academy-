@@ -62,11 +62,13 @@ export default function AdminAssignmentsPage() {
   if (loading) return <div className="page loading-screen">Loading...</div>;
 
   return (
-    <div className="page admin-page">
-      <Link to="/admin" className="back-btn">
+    <div className="page admin-page admin-page-color">
+      <Link to="/admin" className="back-btn admin-back">
         ← Admin Panel
       </Link>
-      <h1 className="admin-page-title">📝 Assignment Builder</h1>
+      <header className="admin-page-hero">
+        <h1>📝 Assignment Builder</h1>
+      </header>
 
       <button type="button" className="btn btn-gradient" onClick={startNew}>
         + Create New Assignment

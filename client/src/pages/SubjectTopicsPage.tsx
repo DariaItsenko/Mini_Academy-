@@ -2,9 +2,10 @@ import { Link, useParams } from 'react-router-dom';
 import { useCurriculum } from '../context/CurriculumContext';
 import { useLanguage } from '../context/LanguageContext';
 import { getSubtopicContentCounts } from '../lib/subtopicMeta';
+import { getSubjectTitle } from '../lib/subjectDisplay';
 import type { Subtopic, Topic } from '../types';
 
-function SubjectHeroIcon({ subject }: { subject: string }) {
+function SubjectHeroIcon({ subject, icon }: { subject: string; icon: string }) {
   if (subject === 'math') {
     return (
       <span className="subject-hero-icon math-icon" aria-hidden>
@@ -18,7 +19,14 @@ function SubjectHeroIcon({ subject }: { subject: string }) {
   if (subject === 'english') {
     return <span className="subject-hero-icon emoji-icon" aria-hidden>📖</span>;
   }
-  return <span className="subject-hero-icon emoji-icon" aria-hidden>🌍</span>;
+  if (subject === 'ukrainian') {
+    return <span className="subject-hero-icon emoji-icon" aria-hidden>🌍</span>;
+  }
+  return (
+    <span className="subject-hero-icon emoji-icon" aria-hidden>
+      {icon}
+    </span>
+  );
 }
 
 function LessonRow({
@@ -100,8 +108,8 @@ export default function SubjectTopicsPage() {
       </Link>
 
       <header className="subject-hero">
-        <SubjectHeroIcon subject={subject} />
-        <h1>{t(data.titleKey)}</h1>
+        <SubjectHeroIcon subject={subject} icon={data.icon} />
+        <h1>{getSubjectTitle(data, t)}</h1>
         <p>{t('chooseTopic')}</p>
       </header>
 

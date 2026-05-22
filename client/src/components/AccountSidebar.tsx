@@ -58,9 +58,11 @@ export function AccountSidebar() {
               <Link to="/profile" className="sidebar-link" onClick={closeSidebar}>
                 <span>🏠</span> {t('profile')}
               </Link>
-              <Link to="/statistics" className="sidebar-link" onClick={closeSidebar}>
-                <span>📊</span> {t('statistics')}
-              </Link>
+              {!user.isAdmin && (
+                <Link to="/statistics" className="sidebar-link" onClick={closeSidebar}>
+                  <span>📊</span> {t('statistics')}
+                </Link>
+              )}
               <Link to="/shop" className="sidebar-link" onClick={closeSidebar}>
                 <span>🛍️</span> {t('avatarShop')}
               </Link>

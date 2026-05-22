@@ -1,24 +1,30 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AppLogo } from '../components/AppLogo';
 import { Header } from '../components/Header';
 import { WelcomeModal } from '../components/WelcomeModal';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
+import { useCurriculum } from '../context/CurriculumContext';
+import { getSubjectCardClass, getSubjectTitle } from '../lib/subjectDisplay';
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { curriculum, loading: curriculumLoading } = useCurriculum();
   const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       const seen = sessionStorage.getItem('welcome-shown');
       if (!seen) {
         setShowWelcome(true);
         sessionStorage.setItem('welcome-shown', '1');
       }
     }
-  }, [loading, user]);
+  }, [authLoading, user]);
+
+  const subjects = Object.values(curriculum);
 
   return (
     <div className="page home-page">
@@ -30,67 +36,36 @@ export default function HomePage() {
       <div className="decor decor-palette">🎨</div>
 
       <Header variant="home" />
+      {user?.isAdmin && <p className="admin-home-hint">{t('adminPreviewHint')}</p>}
       {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} />}
 
       <main className="home-main">
+        <AppLogo size="lg" className="home-logo" />
         <h1 className="home-title">
-          <span className="title-deco" aria-hidden>
-            🎓
-          </span>
           <span className="title-text">{t('title')}</span>
-          <span className="title-deco" aria-hidden>
-            📚
-          </span>
         </h1>
         <p className="home-subtitle">{t('subtitle')}</p>
 
-        <div className="subject-grid">
-          <div className="subject-wrap">
-            <span className="subject-float">🔢</span>
-            <Link to={user ? '/subject/math' : '/login'} className="subject-card math-card">
-              <span className="subject-icon" aria-hidden>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                  <rect x="4" y="2" width="16" height="20" rx="2" stroke="white" strokeWidth="2" />
-                  <path d="M8 7h8M8 11h3M13 11h3M8 15h3M13 15h3" stroke="white" strokeWidth="2" />
-                </svg>
-              </span>
-              <span className="subject-label">{t('math')}</span>
-            </Link>
+        {curriculumLoading ? (
+          <p className="home-loading-subjects">{t('loading')}...</p>
+        ) : (
+          <div className={`subject-grid subject-grid-dynamic count-${subjects.length}`}>
+            {subjects.map((subj) => (
+              <div key={subj.id} className="subject-wrap">
+                <span className="subject-float">{subj.icon}</span>
+                <Link
+                  to={user ? `/subject/${subj.id}` : '/login'}
+                  className={`subject-card ${getSubjectCardClass(subj)}`}
+                >
+                  <span className="subject-icon subject-emoji-icon" aria-hidden>
+                    {subj.icon}
+                  </span>
+                  <span className="subject-label">{getSubjectTitle(subj, t)}</span>
+                </Link>
+              </div>
+            ))}
           </div>
-          <div className="subject-wrap">
-            <span className="subject-float">📖</span>
-            <Link to={user ? '/subject/english' : '/login'} className="subject-card english-card">
-              <span className="subject-icon" aria-hidden>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M6 4h9a3 3 0 0 1 3 3v13l-4-2-4 2V4z"
-                    stroke="white"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                  <path d="M6 4v13l4-2 4 2V7a3 3 0 0 0-3-3H6z" stroke="white" strokeWidth="2" />
-                </svg>
-              </span>
-              <span className="subject-label">{t('english')}</span>
-            </Link>
-          </div>
-          <div className="subject-wrap">
-            <span className="subject-float ua-float">UA</span>
-            <Link to={user ? '/subject/ukrainian' : '/login'} className="subject-card ukrainian-card">
-              <span className="subject-icon" aria-hidden>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2" />
-                  <path
-                    d="M3 12h18M12 3c3 3 4.5 6 4.5 9S15 18 12 21M12 3c-3 3-4.5 6-4.5 9S9 18 12 21"
-                    stroke="white"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-              </span>
-              <span className="subject-label">{t('ukrainian')}</span>
-            </Link>
-          </div>
-        </div>
+        )}
 
         {!user && (
           <button type="button" className="show-welcome-link" onClick={() => setShowWelcome(true)}>
