@@ -13,6 +13,15 @@ The app is one Node server that serves the React build + API + uploaded videos.
    - **Environment:** `NODE_ENV=production`, `JWT_SECRET` = any long random string
 5. After deploy you get a URL like `https://elementary-learning-hub.onrender.com` — that is your **real website**.
 
+### Build failed with exit code 127?
+
+Usually **command not found** during build. Fix:
+
+1. Ensure the **whole repo** is on GitHub (root `package.json`, `client/`, `server/`, `render.yaml`).
+2. Use the `buildCommand` from `render.yaml` (explicit `npm install` in client and server).
+3. In Render → **Logs** → open the failed deploy and read the **last red line** (e.g. missing `client` folder).
+4. Push the latest `render.yaml` and click **Manual Deploy** → **Clear build cache & deploy**.
+
 **PWA install** works on HTTPS (Render provides it). Open the site in Chrome → Account → **Install App**, or use the browser install icon in the address bar.
 
 ## Option B: Railway / Fly.io

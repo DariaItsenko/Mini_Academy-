@@ -1,15 +1,15 @@
-# Render Blueprint — free tier (no persistent disk).
-# Data (data.json, uploads) lives in the app folder and may reset on redeploy.
-# For a persistent disk, use a paid plan and see render.paid.yaml.example
+# Render Blueprint — free tier (no persistent disk)
 services:
   - type: web
     name: elementary-learning-hub
     runtime: node
     plan: free
-    buildCommand: npm run install:all && npm run build
-    startCommand: npm run start
+    buildCommand: npm install && npm install --prefix client && npm install --prefix server && npm run build --prefix client
+    startCommand: cd server && node index.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: JWT_SECRET
         generateValue: true
+      - key: NODE_VERSION
+        value: "20"
