@@ -1,0 +1,19 @@
+# Deploy at https://render.com — connect a Git repo or use Blueprint deploy.
+services:
+  - type: web
+    name: elementary-learning-hub
+    runtime: node
+    plan: free
+    buildCommand: npm run install:all && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: learning-hub-data
+      mountPath: /var/data
+      sizeGB: 1
