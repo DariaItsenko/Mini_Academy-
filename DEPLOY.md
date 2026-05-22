@@ -23,7 +23,8 @@ Same idea: build client, run `server/index.js`, set `PORT` from the platform.
 
 - User accounts, progress, curriculum, and assignments are stored in `server/data.json`.
 - Uploaded videos are in `server/uploads/`.
-- On Render, attach a **disk** (see `render.yaml`) so data survives redeploys.
+- **Render Free:** `render.yaml` has **no disk** (disks are not allowed on free tier). Data works while the service runs; it may reset after redeploy or restart.
+- **Render Paid (Starter+):** use `render.paid.yaml.example` — copy to `render.yaml` and add a disk at `/var/data` so data survives redeploys.
 
 ## Admin after deploy
 

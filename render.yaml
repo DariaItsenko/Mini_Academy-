@@ -1,4 +1,6 @@
-# Deploy at https://render.com — connect a Git repo or use Blueprint deploy.
+# Render Blueprint — free tier (no persistent disk).
+# Data (data.json, uploads) lives in the app folder and may reset on redeploy.
+# For a persistent disk, use a paid plan and see render.paid.yaml.example
 services:
   - type: web
     name: elementary-learning-hub
@@ -11,9 +13,3 @@ services:
         value: production
       - key: JWT_SECRET
         generateValue: true
-      - key: DATA_DIR
-        value: /var/data
-    disk:
-      name: learning-hub-data
-      mountPath: /var/data
-      sizeGB: 1
