@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '24'
   # ── Set this to your Azure Web App name ──────────────────────────────────────
   AZURE_WEBAPP_NAME: miniacademy
   # ─────────────────────────────────────────────────────────────────────────────
