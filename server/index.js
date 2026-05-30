@@ -539,7 +539,10 @@ app.post('/api/auth/admin-login', async (req, res) => {
 });
 
 // ——— Static client ———
-const clientDist = join(__dirname, '../client/dist');
+const clientDist = isProd ? join(__dirname, 'public') : join(__dirname, '../client/dist');
+
+console.log(`clientDist: ${clientDist}`);
+
 if (existsSync(clientDist)) {
   app.use(express.static(clientDist));
   app.get('*', (req, res, next) => {
@@ -550,6 +553,6 @@ if (existsSync(clientDist)) {
   });
 }
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

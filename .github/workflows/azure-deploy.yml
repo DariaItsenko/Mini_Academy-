@@ -1,0 +1,65 @@
+name: Build and Deploy to Azure Web App
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  # ── Set this to your Azure Web App name ──────────────────────────────────────
+  AZURE_WEBAPP_NAME: miniacademy
+  # ─────────────────────────────────────────────────────────────────────────────
+
+jobs:
+  build-and-deploy:
+    name: Build client → assemble server → deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      # ── 1. Build React client ─────────────────────────────────────────────────
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Build client (Vite)
+        run: npm run build
+        working-directory: client
+
+      # ── 2. Assemble deployment package ───────────────────────────────────────
+      #    Copy the Vite output into server/public so the Express app can serve it.
+
+      - name: Copy client build into server/public
+        run: |
+          rm -rf server/public
+          cp -r client/dist/. server/public/
+
+      - name: Install server production dependencies
+        run: npm ci --omit=dev
+        working-directory: server
+
+      # ── 3. Deploy to Azure Web App ────────────────────────────────────────────
+      #    Requires AZURE_WEBAPP_PUBLISH_PROFILE secret:
+      #      Azure Portal → your Web App → Overview → "Download publish profile"
+      #      GitHub repo → Settings → Secrets → Actions → New repository secret
+      #      Name: AZURE_WEBAPP_PUBLISH_PROFILE  Value: (paste file contents)
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: server
